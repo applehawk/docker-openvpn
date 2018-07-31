@@ -1,9 +1,9 @@
 # Original credit: https://github.com/jpetazzo/dockvpn
 
 # Smallest base image
-FROM alpine:latest
+FROM ruby:alpine
 
-LABEL maintainer="Kyle Manna <kyle@kylemanna.com>"
+LABEL maintainer="Modification - github.com/applehawk (Kyle Manna <kyle@kylemanna.com>)"
 
 # Testing: pamtester
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/repositories && \
@@ -13,6 +13,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/reposi
 
 # Needed by scripts
 ENV OPENVPN /etc/openvpn
+ENV OVPNMCGEN /usr/local/ovpnmcgen
 ENV EASYRSA /usr/share/easy-rsa
 ENV EASYRSA_PKI $OPENVPN/pki
 ENV EASYRSA_VARS_FILE $OPENVPN/vars
@@ -29,6 +30,15 @@ CMD ["ovpn_run"]
 
 ADD ./bin /usr/local/bin
 RUN chmod a+x /usr/local/bin/*
+
+# Initialize OVPNMCGEN
+RUN mkdir $OVPNMCGEN
+ADD ./Gemfile $OVPNMCGEN
+RUN gem install bundler
+
+WORKDIR $OVPNMCGEN
+RUN pwd
+RUN bundle install
 
 # Add support for OTP authentication using a PAM module
 ADD ./otp/openvpn /etc/pam.d/

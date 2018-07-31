@@ -30,5 +30,14 @@ CMD ["ovpn_run"]
 ADD ./bin /usr/local/bin
 RUN chmod a+x /usr/local/bin/*
 
+# Initialize OVPNMCGEN
+RUN mkdir $OVPNMCGEN
+ADD ./Gemfile $OVPNMCGEN
+RUN gem install bundler
+
+WORKDIR $OVPNMCGEN
+RUN pwd
+RUN bundle install
+
 # Add support for OTP authentication using a PAM module
 ADD ./otp/openvpn /etc/pam.d/
