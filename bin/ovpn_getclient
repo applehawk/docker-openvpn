@@ -50,7 +50,7 @@ get_apple_config() {
         --port $OVPN_PORT \
         --p12file ${P12FILE} \
         --p12pass ${P12PASS} \
-        ovpnuser1 iphone
+        ${cn} apple-device
 }
 
 #
