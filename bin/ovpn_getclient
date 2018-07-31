@@ -144,8 +144,10 @@ case "$parm" in
         cp "$EASYRSA_PKI/ca.crt" "$dir/ca.crt"
         cp "$EASYRSA_PKI/issued/${cn}.crt" "$dir/${cn}.crt"
         cp "$EASYRSA_PKI/ta.key" "$dir/ta.key"
+        get_apple_config > "$dir/${cn}.mobileconfig"
         ;;
     "" | "combined")
+        mkdir -p "$dir"
         get_client_config "combined"
         get_apple_config > "$dir/${cn}.mobileconfig"
         ;;
