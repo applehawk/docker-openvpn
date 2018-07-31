@@ -13,7 +13,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/reposi
 
 # Needed by scripts
 ENV OPENVPN /etc/openvpn
-ENV OVPNMCGEN /usr/local/ovpnmcgen
+ENV OPENVPNMCGEN /usr/local/ovpnmcgen
 ENV EASYRSA /usr/share/easy-rsa
 ENV EASYRSA_PKI $OPENVPN/pki
 ENV EASYRSA_VARS_FILE $OPENVPN/vars
@@ -32,13 +32,15 @@ ADD ./bin /usr/local/bin
 RUN chmod a+x /usr/local/bin/*
 
 # Initialize OVPNMCGEN
-RUN mkdir $OVPNMCGEN
-ADD ./Gemfile $OVPNMCGEN
+RUN mkdir OPENVPNMCGEN
+ADD ./Gemfile OPENVPNMCGEN
 RUN gem install bundler
 
-WORKDIR $OVPNMCGEN
+WORKDIR OPENVPNMCGEN
 RUN pwd
 RUN bundle install
+
+WORKDIR /usr/local/bin
 
 # Add support for OTP authentication using a PAM module
 ADD ./otp/openvpn /etc/pam.d/

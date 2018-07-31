@@ -29,6 +29,33 @@ if [ ! -f "$EASYRSA_PKI/private/${cn}.key" ]; then
     exit 1
 fi
 
+get_apple_config() {
+    P12FILE=$EASYRSA_PKI/private/${cn}.p12
+    P12PASS=1234
+
+    # Certificate Authority file
+    OVPN_CA=$EASYRSA_PKI/ca.crt
+    # TLS-Auth
+    OVPN_TA=$EASYRSA_PKI/ta.key
+    
+    CLIENT_CRT=$EASYRSA_PKI/issued/${cn}.crt
+    CLIENT_KEY=$EASYRSA_PKI/private/${cn}.key
+
+    openssl pkcs12 -export -in ${CLIENT_CRT} -inkey ${CLIENT_KEY} -certfile ${OVPN_CA} -out ${P12FILE}
+
+    ovpnmcgen.rb generate \
+        --host $OVPN_CN \
+        --cafile $OVPN_CA \
+        --tafile $OVPN_TA \
+        --port $OVPN_PORT \
+        --p12file ${P12FILE} \
+        --p12pass ${P12PASS} \
+        ovpnuser1 iphone
+}
+
+#
+# Generation Client Config
+#
 get_client_config() {
     mode="$1"
     echo "
@@ -106,6 +133,8 @@ tls-auth ta.key 1
     fi
 }
 
+
+
 dir="$OPENVPN/clients/$cn"
 case "$parm" in
     "separated")
@@ -118,10 +147,12 @@ case "$parm" in
         ;;
     "" | "combined")
         get_client_config "combined"
+        get_apple_config > "$dir/${cn}.mobileconfig"
         ;;
     "combined-save")
         mkdir -p "$dir"
         get_client_config "combined" > "$dir/${cn}-combined.ovpn"
+        get_apple_config > "$dir/${cn}.mobileconfig"
         ;;
     *)
         echo "This script can produce the client configuration in two formats:" >&2
