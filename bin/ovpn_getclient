@@ -146,7 +146,7 @@ case "$parm" in
         cp "$EASYRSA_PKI/ca.crt" "$dir/ca.crt"
         cp "$EASYRSA_PKI/issued/${cn}.crt" "$dir/${cn}.crt"
         cp "$EASYRSA_PKI/ta.key" "$dir/ta.key"
-        get_apple_config > "$dir/${cn}.mobileconfig"
+        get_apple_config "$dir/${cn}.ovpn" > "$dir/${cn}.mobileconfig"
         ;;
     "" | "combined")
         mkdir -p "$dir"
@@ -156,7 +156,7 @@ case "$parm" in
     "combined-save")
         mkdir -p "$dir"
         get_client_config "combined" > "$dir/${cn}-combined.ovpn"
-        get_apple_config > "$dir/${cn}.mobileconfig"
+        get_apple_config "$dir/${cn}-combined.ovpn" > "$dir/${cn}.mobileconfig"
         ;;
     *)
         echo "This script can produce the client configuration in two formats:" >&2
