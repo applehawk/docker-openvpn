@@ -47,9 +47,9 @@ get_apple_config() {
         --host $OVPN_CN \
         --cafile $OVPN_CA \
         --tafile $OVPN_TA \
+        --key $CLIENT_KEY \
+        --cert $CLIENT_CRT \
         --port $OVPN_PORT \
-        --p12file ${P12FILE} \
-        --p12pass ${P12PASS} \
         ${cn} apple-device
 }
 
