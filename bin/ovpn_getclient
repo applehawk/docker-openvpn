@@ -52,6 +52,7 @@ get_apple_config() {
         --cert $CLIENT_CRT \
         --port $OVPN_PORT \
         --url-probe http://httpstat.us/200 \
+        --p12file $P12FILE \
         --ovpnconfigfile $OVPN_SRC \
         ${cn} apple-device
 }
