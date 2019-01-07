@@ -57,6 +57,28 @@ get_apple_config() {
         ${cn} apple-device
 }
 
+
+add_keys_client_config() {
+    if [ "$mode" == "combined" ]; then
+        echo "
+<key>
+$(cat $EASYRSA_PKI/private/${cn}.key)
+</key>
+<cert>
+$(openssl x509 -in $EASYRSA_PKI/issued/${cn}.crt)
+</cert>
+<ca>
+$(cat $EASYRSA_PKI/ca.crt)
+</ca>
+key-direction 1
+<tls-auth>
+$(cat $EASYRSA_PKI/ta.key)
+</tls-auth>
+
+    "
+    fi
+}
+
 #
 # Generation Client Config
 #
@@ -78,24 +100,23 @@ remote $OVPN_CN $OVPN_PORT $OVPN_PROTO"
     for i in "${OVPN_EXTRA_CLIENT_CONFIG[@]}"; do
       echo "$i"
     done
-    if [ "$mode" == "combined" ]; then
-        echo "
-<key>
-$(cat $EASYRSA_PKI/private/${cn}.key)
-</key>
-<cert>
-$(openssl x509 -in $EASYRSA_PKI/issued/${cn}.crt)
-</cert>
-<ca>
-$(cat $EASYRSA_PKI/ca.crt)
-</ca>
-key-direction 1
-<tls-auth>
-$(cat $EASYRSA_PKI/ta.key)
-</tls-auth>
-
-"
-    elif [ "$mode" == "separated" ]; then
+#    if [ "$mode" == "combined" ]; then
+#        echo "
+#<key>
+#$(cat $EASYRSA_PKI/private/${cn}.key)
+#</key>
+#<cert>
+#$(openssl x509 -in $EASYRSA_PKI/issued/${cn}.crt)
+#</cert>
+#<ca>
+#$(cat $EASYRSA_PKI/ca.crt)
+#</ca>
+#key-direction 1
+#<tls-auth>
+#$(cat $EASYRSA_PKI/ta.key)
+#</tls-auth>
+#"
+    if [ "$mode" == "separated" ]; then
         echo "
 key ${cn}.key
 ca ca.crt
@@ -155,13 +176,14 @@ case "$parm" in
     "" | "combined")
         mkdir -p "$dir"
         get_client_config "combined" > "$dir/${cn}.ovpn"
-#        echo "test, between"
-#        get_apple_config "$dir/${cn}.ovpn" > "$dir/${cn}.mobileconfig"
+        get_apple_config "$dir/${cn}.ovpn" > "$dir/${cn}.mobileconfig"
+        add_keys_client_config "combined" >> "$dir/${cn}.ovpn"
         ;;
     "combined-save")
         mkdir -p "$dir"
         get_client_config "combined" > "$dir/${cn}-combined.ovpn"
         get_apple_config "$dir/${cn}-combined.ovpn" > "$dir/${cn}.mobileconfig"
+        add_keys_client_config "combined" >> "$dir/${cn}.ovpn"
         ;;
     *)
         echo "This script can produce the client configuration in two formats:" >&2
