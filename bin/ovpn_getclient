@@ -155,6 +155,7 @@ case "$parm" in
     "" | "combined")
         mkdir -p "$dir"
         get_client_config "combined" > "$dir/${cn}.ovpn"
+        echo "test, between"
         get_apple_config "$dir/${cn}.ovpn" > "$dir/${cn}.mobileconfig"
         ;;
     "combined-save")
