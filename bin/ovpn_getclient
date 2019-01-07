@@ -129,7 +129,7 @@ tls-auth ta.key 1
         echo "auth-nocache"
     fi
 
-    echo "vpn-on-demand 0"
+#    echo "vpn-on-demand 0"
     if [ "$OVPN_COMP_LZO" == "1" ]; then
         echo "comp-lzo"
     fi
